@@ -15,7 +15,12 @@ use app\modules\admin\models\User;
 use app\modules\admin\models\UserAdver;
 use app\modules\admin\models\Usermodify;
 
+use app\modules\frontadmin\models\auth_item_child\Auth_item_child;
+use app\modules\frontadmin\service\AdminuserService;
+use app\modules\frontadmin\service\UserService;
+use app\modules\jike\models\UserEditPassword;
 use yii\data\ActiveDataProvider;
+use yii\db\Query;
 use yii\web\UrlManager;
 use yii\widgets\ListView;
 
@@ -30,48 +35,6 @@ class UserController extends BaseController{
     }
 
 
-    /**
-     * 创建用户
-     *
-     */
-    public function actionCreate()
-    {
-
-
-        /*$data = [
-            'user' =>[
-
-                'username'    =>  'admin',
-                'password'   =>  'abcabc',
-                'group'   =>  1,
-            ]
-        ];
-
-        $user = new User();
-
-
-        $rs = $user->addOne($data);
-
-
-        p($rs);
-
-        if (!$rs) {
-            p($user->errors);
-        }
-        exit;*/
-
-        $model = new User;
-        if (\Yii::$app->request->isPost) {
-
-            if ($model->addOne(\Yii::$app->request->post())) {
-                jump_success('创建用户成功!');
-            }
-
-        }
-
-        return $this->render('create', ['model'=> $model]);
-
-    }
 
     public function actionUpdate()
     {
@@ -108,18 +71,12 @@ class UserController extends BaseController{
     public function actionList()
     {
 
-        $model = new User();
-        $dataProvider = new ActiveDataProvider([
-            'query' => $model->find(),
-            'pagination' => [
-
-                'pagesize' => 2
-            ]
-        ]);
+        $service = new AdminuserService();
+        $models = $service->getList();
 
         return $this->render('list', [
-            'model' => $model,
-            'dataProvider' => $dataProvider
+            'models' => $models,
+            'pages' => $service->getPages()
         ]);
 
     }
@@ -133,21 +90,22 @@ class UserController extends BaseController{
     {
 
 
-        $model = new User();
+        $this->setLayoutEmpty();
 
-        $params = array();
-        $msg = "";
-        if (\Yii::$app->request->isPost  &&  $params=\Yii::$app->request->post()) {
+        $model = UserEditPassword::findOne(\Yii::$app->user->identity->getId());
 
-            $model = $model->savePassword($params);
-            if (!$model->hasErrors()) {
-                $msg = "修改成功~";
+
+        if(\Yii::$app->request->isPost && $model instanceof UserEditPassword){
+            $result = $model->editPassword(\Yii::$app->request->post());
+            if($result){
+                \Yii::$app->getSession()->setFlash('success','修改密码成功!');
+            } else {
+                \Yii::$app->getSession()->setFlash('fail','修改密码失败!');
             }
         }
 
-        return $this->render('changepassword',[
-            'model' => $model,
-            'msg'   => $msg
+        return $this->render('editpassword', [
+            'model' => $model
         ]);
     }
 
@@ -162,6 +120,15 @@ class UserController extends BaseController{
         } else {
             jump_error($user->getFirstError(User::DELETE_EFFOR_INFO));
         }
+    }
+
+    //数据统计
+    public function actionCount(){
+
+        $service = new AdminuserService();
+        $todayRegister = $service->getTodayRegistNumber();
+        $totalRegister = $service->getUserTotalNumber();
+        return $this->render('count.php', ['todayRegister' => $todayRegister, 'totalRegister'=>$totalRegister]) ;
     }
 
 }

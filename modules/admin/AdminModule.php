@@ -16,6 +16,5 @@ class AdminModule extends \yii\base\Module
 
         $this->params['maxPostCount'] = 50;
 
-
     }
 }

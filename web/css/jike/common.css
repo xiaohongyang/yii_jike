@@ -1,0 +1,40 @@
+/********************************************** commmon class start ***************************************************/
+.cl_default {
+  text-decoration: none;
+  color: #888;
+}
+a.cl_default:hover {
+  color: #333;
+}
+.bold {
+  font-weight: 700;
+}
+.fs_df {
+  font-size: 12px;
+}
+/********************************************** commmon class end ***************************************************/
+.navbar {
+  min-height: 30px;
+}
+.navbar .navbar-header {
+  height: 30px;
+}
+.navbar ul li {
+  height: 30px;
+}
+.navbar ul li a {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.footer {
+  height: 70px;
+  background: none;
+  border-top: 2px solid #eee;
+}
+.footer a {
+  font-size: 12px;
+}
+.footer .cl_default,
+.footer a {
+  margin-left: 1.5em;
+}

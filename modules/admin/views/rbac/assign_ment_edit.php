@@ -19,7 +19,7 @@
     <?php
 
     ?>
-    <h3><?=t_arr('app',['user','role','edit'],'',':')?> <?=$user->username?></h3>
+    <h3><?=t_arr('app',['user','role','edit'],'',':')?> <?=$user->user_name?></h3>
     <?=$form->field($model, 'user_id')->textInput([
                                             'placeholde' => 'placeholde',
                                             'value' => $user->id

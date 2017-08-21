@@ -36,8 +36,13 @@ class PublicController extends Controller{
     public function actionIndex()
     {
 
-        //$this->redirect(['public/login']);
+        p(\Yii::$app->user);exit;
 
+        if(\Yii::$app->user->isGuest)
+            $this->redirect(['public/login']);
+        else
+            return $this->render('index.php',[
+            ]);
     }
 
     public function test($event)
@@ -56,22 +61,20 @@ class PublicController extends Controller{
         $this->layout = "login";
 
         if(!\Yii::$app->user->isGuest)
-            $this->redirect(['index/index']);
+            $this->redirect(['/admin/index/main']);
 
         $user = new User();
 
         if (\Yii::$app->request->isPost) {
-            if ($user->login(\Yii::$app->request->post())) {
-                $this->redirect(['index/index']);
-
-            }else{
-                return $this->render('login', ['model' => $user]);
+            $result = $user->login(\Yii::$app->request->post());
+            if (true===$result) {
+                $this->redirect(['/admin/index/main']);
+            } else {
+                return $this->render('login', ['model' => $result]);
             }
-        }else{
+        } else {
             return $this->render('login', ['model' => $user]);
         }
-
-
     }
 
 

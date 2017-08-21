@@ -17,6 +17,7 @@ use yii\helpers\Html;
     <?= $content ?>
     <!--<footer>&copy; 2014 by My Company</footer>-->
     <?php $this->endBody(); ?>
+    <input type="hidden" id="csrf_xhy"   value="<?=Yii::$app->request->getCsrfToken()?>" />
     </body>
     </html>
 <?php $this->endPage(); ?>

@@ -7,7 +7,7 @@
     ]);
 ?>
 
-    <?=$form->field($model, 'username')->textInput(['placeholder' => '请输入用户名!']) ?>
+    <?=$form->field($model, 'user_name')->textInput(['placeholder' => '请输入用户名!']) ?>
     <?=$form->field($model, 'password')->textInput(['placeholder' => '请输入密码!']) ?>
 
     <?=Html::submitButton('创建用户', ['class' => 'btn btn-primary']) ?>

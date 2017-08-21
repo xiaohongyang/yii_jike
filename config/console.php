@@ -6,14 +6,26 @@ $params = require(__DIR__ . '/params.php');
 $db = require(__DIR__ . '/db.php');
 
 return [
+
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log', 'gii'],
     'controllerNamespace' => 'app\commands',
     'modules' => [
         'gii' => 'yii\gii\Module',
+        'adminrbac' => [
+            'class' => 'mdm\admin\Module',
+        ]
     ],
+
     'components' => [
+        'homeUrl' => function(){
+            return '/';
+        },
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+//            'class' => 'yii\rbac\PhpManager',
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

@@ -1,5 +1,6 @@
 <?php
 
+$frontendUrl = 'http://'.(isset($_SERVER['HTTP_HOST']) && !is_null($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'http://jike.com');
 return [
     'adminEmail' => 'admin@example.com',
 
@@ -9,8 +10,9 @@ return [
     ],
 
     'host' => [
-        'img_host' => 'http://'.$_SERVER['HTTP_HOST'].'/'
+        'img_host' => $frontendUrl
     ],
-
+    'homeUrl' => $frontendUrl,
     'icon-framework' => 'fa',
+    'video_service' => 'ali_video'
 ];

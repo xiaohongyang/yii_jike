@@ -1,0 +1,118 @@
+.side-main {
+  color: #7f7f7f;
+}
+.side-main .inline {
+  display: inline;
+}
+.side-main .inline input {
+  height: 25px;
+  line-height: 25px;
+  font-size: 12px;
+}
+.side-main .input-wrap {
+  display: none;
+}
+.side-main span.btn {
+  background: none;
+  border: none;
+}
+.side-main .div01 ul {
+  height: 170px;
+  color: #7f7f7f;
+}
+.side-main .div01 ul li {
+  float: left;
+}
+.side-main .div01 ul li.headpic {
+  position: relative;
+}
+.side-main .div01 ul li.headpic .btn-wrap .btn {
+  padding: 0;
+  margin: 0;
+}
+.side-main .div01 ul li.headpic .btn-wrap img.ajax_upload_img {
+  width: 160px;
+  height: 160px;
+}
+.side-main .div01 ul li.headpic button {
+  position: absolute;
+  right: 0;
+  margin-right: 8px;
+  bottom: 8px;
+}
+.side-main .div01 ul li.ml-dl {
+  line-height: 30px;
+}
+.side-main .div01 ul li.ml-dl .username {
+  font-size: 20px;
+  font-family: 微软雅黑;
+  color: #000;
+}
+.side-main .div01 ul li.ml-dl .love_points {
+  position: relative;
+}
+.side-main .div01 ul li.ml-dl .love_points .number {
+  color: #ed1c24;
+  text-decoration: underline;
+}
+.side-main .div01 ul li.ml-dl .love_points img {
+  position: absolute;
+  z-index: 1;
+  top: 30px;
+  left: 0;
+}
+.side-main .qq_space_address,
+.side-main .sina_space_address {
+  clear: left;
+}
+.side-main .qq_space_address.qq_space_address,
+.side-main .sina_space_address.qq_space_address {
+  margin-top: 10px;
+}
+.side-main .qq_space_address a,
+.side-main .sina_space_address a {
+  color: #3aa2ed;
+}
+.side-main .wechat_address input {
+  width: 500px;
+}
+.side-main .wechar_ewm_pic .btn-wrap {
+  display: inline-block;
+  margin: 5px;
+  width: 50px;
+  height: 52px;
+  border: 1px solid #7f7f7f;
+}
+.side-main .wechar_ewm_pic .btn-wrap span.btn {
+  padding: 1px;
+  position: relative;
+}
+.side-main .wechar_ewm_pic .btn-wrap span.btn .del {
+  top: 5px;
+  display: none;
+  position: absolute;
+  right: 3px;
+  color: red;
+  background: #ccc;
+  height: 16px;
+  line-height: 16px;
+}
+.side-main .wechar_ewm_pic .btn-wrap span.btn img {
+  width: 48px;
+  height: 40px;
+  margin-top: 4px;
+  margin-left: -1px;
+}
+.side-main .wechar_ewm_pic .btn-wrap span.btn .del {
+  top: -2px;
+  right: 0;
+}
+.side-main .wechar_ewm_pic .btn-wrap {
+  width: 122px;
+  height: 124px;
+  margin-left: 0px;
+}
+.side-main .wechar_ewm_pic .btn-wrap span.btn img {
+  width: 120px;
+  height: 110px;
+}

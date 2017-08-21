@@ -5,7 +5,7 @@
 $I = new AcceptanceTester($scenario);
 $I->wantTo('ensure that home page works');
 $I->amOnPage(Yii::$app->homeUrl);
-$I->see('My Company');
-$I->seeLink('About');
-$I->click('About');
-$I->see('This is the About page.');
+$I->see('白色耳机线');
+/*$I->seeLink('注册');
+$I->click('About');*/
+$I->see('红米4.0');

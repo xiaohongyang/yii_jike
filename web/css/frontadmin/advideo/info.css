@@ -1,0 +1,8 @@
+.main-wrapper ul {
+  padding: 0;
+  line-height: 30px;
+}
+.main-wrapper ul li {
+  list-style: square inside;
+  margin-top: 20px;
+}

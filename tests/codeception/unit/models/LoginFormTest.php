@@ -2,12 +2,13 @@
 
 namespace tests\codeception\unit\models;
 
+use app\modules\jike\models\UserLogin;
 use Yii;
 use yii\codeception\TestCase;
 use app\models\LoginForm;
 use Codeception\Specify;
 
-class LoginFormTest extends TestCase
+class LoginFormTest extends BaseTestCase
 {
     use Specify;
 
@@ -30,32 +31,32 @@ class LoginFormTest extends TestCase
         });
     }
 
-    public function testLoginWrongPassword()
-    {
-        $model = new LoginForm([
-            'username' => 'demo',
-            'password' => 'wrong_password',
-        ]);
 
-        $this->specify('user should not be able to login with wrong password', function () use ($model) {
-            expect('model should not login user', $model->login())->false();
-            expect('error message should be set', $model->errors)->hasKey('password');
-            expect('user should not be logged in', Yii::$app->user->isGuest)->true();
-        });
+
+    public function testLoginXhy(){
+        $model = new UserLogin();
+        $model->user_mobile = '15995716443';
+        $model->user_password = '321321';
+        $data = [$model->formName()=>[
+            'user_mobile' => '15995716443',
+            'user_password' => '321321'
+        ]];
+        $this->assertTrue($model->login($data), $this->convUtf82Gb2312( implode('|',$model->getFirstErrors()) ) );
     }
 
-    public function testLoginCorrect()
-    {
-        $model = new LoginForm([
-            'username' => 'demo',
-            'password' => 'demo',
-        ]);
+    public function testUserId(){
+        $model = new UserLogin();
+        $model->user_mobile = '15995716443';
+        $model->user_password = 'abcabc';
+        $data = [$model->formName()=>[
+            'user_mobile' => '15995716443',
+            'user_password' => 'abcabc'
+        ]];
+        $rs = $model->login($data);
 
-        $this->specify('user should be able to login with correct credentials', function () use ($model) {
-            expect('model should login user', $model->login())->true();
-            expect('error message should not be set', $model->errors)->hasntKey('password');
-            expect('user should be logged in', Yii::$app->user->isGuest)->false();
-        });
+        $model->user_id;
+        //$this->assertEquals($model->user_id,'15','id 不对!'.$model->user_id);
+        $this->assertTrue($rs,  $model->user_id.'vvvv');
     }
 
 }

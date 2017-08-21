@@ -17,11 +17,17 @@ use yii\widgets\ActiveForm;
 
 
     <div class="public-login">
-
+        <?php
+        $form = ActiveForm::begin();
+        ?>
+        <div class="errors">
+            <?php echo $form->errorSummary($model);?>
+            <?php echo $form->errorSummary($model,'Your message goes here'); ?>
+            <?=$form->errorSummary($model);?>zz
+            <?php print_r($model) ?>
+        </div>
         <table class="table bordered">
-            <?php
-                $form = ActiveForm::begin();
-            ?>
+
             <thead>
                 用户登录
             </thead>
@@ -52,11 +58,12 @@ use yii\widgets\ActiveForm;
                 </td>
             </tr>
 
-            <?php
-                ActiveForm::end();
-            ?>
+
         </table>
 
+        <?php
+        ActiveForm::end();
+        ?>
     </div>
 
 </div>

@@ -4,6 +4,7 @@
 
 
 //跳转扩展
+use yii\helpers\Html;
 use yii\web\Response;
 
 include_once "../ext/jumpage/jumpage.php";
@@ -23,14 +24,18 @@ include_once "../ext/conf/conf.php" ;
  * @param  [type] $str [description]
  * @return [type]      [description]
  */
-function p($str, $pos=0) {
-    $pos = $pos ? 'phpPrintDefineFixed' : '';
-    if(is_null($str) OR is_bool($str)) {
-        var_dump($str);
-    } else {
-        echo '<pre class="phpPrintDefine '.$pos.'">'.print_r($str,1).'</pre>';
+
+if(!function_exists('p')){
+    function p($str, $pos=0) {
+        $pos = $pos ? 'phpPrintDefineFixed' : '';
+        if(is_null($str) OR is_bool($str)) {
+            var_dump($str);
+        } else {
+            echo '<pre class="phpPrintDefine '.$pos.'">'.print_r($str,1).'</pre>';
+        }
     }
 }
+
 
 
 /**
@@ -38,9 +43,11 @@ function p($str, $pos=0) {
  *
  * @return mixed|\yii\web\User
  */
-function user()
-{
-    return Yii::$app->user;
+if(!function_exists('user')){
+    function user()
+    {
+        return Yii::$app->user;
+    }
 }
 
 
@@ -53,17 +60,19 @@ function user()
  * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
  * @return void
  */
-function jump_error($message = '', $jumpUrl = '', $ajax = false, $timeWait=null)
-{
+if(!function_exists('jump_error')){
+    function jump_error($message = '', $jumpUrl = '', $ajax = false, $timeWait=null)
+    {
 
-    $jump = new ext\jumpage\jumpage();
+        $jump = new ext\jumpage\jumpage();
 
-    if (!is_null($timeWait)) {
+        if (!is_null($timeWait)) {
 
-        $jump->setErrorWait($timeWait);
+            $jump->setErrorWait($timeWait);
+        }
+
+        $jump->error($message, $jumpUrl, $ajax ) ;
     }
-
-    $jump->error($message, $jumpUrl, $ajax ) ;
 }
 
 /**
@@ -82,9 +91,7 @@ function jump_success($message = '', $jumpUrl = '', $ajax = false, $timeWait=nul
 
         $jump->setSuccessWait($timeWait);
     }
-
     $jump->success($message , $jumpUrl, $ajax );
-
 }
 
 
@@ -393,7 +400,7 @@ function renderJson($status=null, $message=null, $data=array(), $url = null)
 {
     \Yii::$app->response->format = Response::FORMAT_JSON;
 
-    if (!is_null($status) && $message) {
+    if ((!is_null($status) && $message) || (is_array($data) && count($data) )) {
         \Yii::$app->response->data = [
             'status' => $status,
             'message' => $message,
@@ -406,10 +413,10 @@ function renderJson($status=null, $message=null, $data=array(), $url = null)
 
 }
 
-function returnJson($status=null, $message=null, $data=array(), $url = null)
+function returnJson($status=null, $message=null, $data=array(), $url = null, $isEcho=true)
 {
 
-    if (!is_null($status) && $message) {
+    if ((!is_null($status) && $message) || (is_array($data) && count($data) )) {
          $data =[
             'status' => $status,
             'message' => $message,
@@ -420,11 +427,152 @@ function returnJson($status=null, $message=null, $data=array(), $url = null)
         $data = $status;
     }
 
-    echo json_encode($data);
+    if($isEcho)
+        echo json_encode($data);
+    else
+        return json_encode($data);
 
+    exit;
 }
 
 function getImageHost()
 {
     return Yii::$app->params['host']['img_host'];
+}
+
+/**
+ * @param $imgPath
+ * @param $width
+ * @param $height
+ * @return string
+ */
+function getImage($imgPath,$width=null, $height=null){
+
+    $size = '';
+    if(! is_null($width) || !is_null($height))
+        $size.='&';
+    if(!is_null($width)){
+        strlen($size)>1 ? $size.='&' : '';
+        $size.="w={$width}";
+    }
+    if(!is_null($height)){
+        strlen($size)>1 ? $size.='&' : '';
+        $size.="h={$height}";
+    }
+
+    return getImageHost().'/showpic.php?src=/'.$imgPath.$size;
+}
+
+
+/**
+ * 获取客户端IP地址
+ * @param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
+ * @return mixed
+ */
+function get_client_ip($type = 0) {
+    $type       =  $type ? 1 : 0;
+    static $ip  =   NULL;
+    if ($ip !== NULL) return $ip[$type];
+    if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $arr    =   explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $pos    =   array_search('unknown',$arr);
+        if(false !== $pos) unset($arr[$pos]);
+        $ip     =   trim($arr[0]);
+    }elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip     =   $_SERVER['HTTP_CLIENT_IP'];
+    }elseif (isset($_SERVER['REMOTE_ADDR'])) {
+        $ip     =   $_SERVER['REMOTE_ADDR'];
+    }
+    // IP地址合法验证
+    $long = sprintf("%u",ip2long($ip));
+    $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
+    return $ip[$type];
+}
+
+function get_action_css_url($isEcho=false){
+
+    $str = Yii::$app->controller->module->id? (Yii::$app->controller->module->id.'/') : '';
+    $str .=  Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
+
+    $str = Yii::getAlias('@web/css/'.$str.'.css');
+    return $str;
+
+}
+
+function get_action_js_url($type=0){
+
+    $str = Yii::$app->controller->module->id? (Yii::$app->controller->module->id.'/') : '';
+    $str .=  Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
+    $str = Yii::getAlias('@web/js/'.$str.'.js');
+    return $str;
+
+}
+
+function registerActionJsFile(){
+
+    $file = get_action_js_url();
+
+    $pre = '.';
+    if(file_exists($pre.$file) && is_file($pre.$file)){
+        echo Yii::$app->view->registerJsFile($file);
+    }
+}
+
+function registerActionCssFile(){
+
+    $file = get_action_css_url();
+
+    $pre = '.';
+    if(file_exists($pre.$file) && is_file($pre.$file)){
+        echo Yii::$app->view->registerCssFile($file);
+    }
+}
+
+function get_site_array(){
+
+    $arr = [];
+    if(Yii::$app->controller->module->id)
+        $arr[] = Yii::$app->controller->module->id;
+    if(Yii::$app->controller->id)
+        $arr[] = Yii::$app->controller->id;
+    if(Yii::$app->controller->action->id)
+        $arr[] = Yii::$app->controller->action->id;
+    return $arr;
+}
+
+
+function truncate_utf8_string($string, $length, $etc = '...')
+{
+    $result = '';
+    $string = html_entity_decode(trim(strip_tags($string)), ENT_QUOTES, 'UTF-8');
+    $strlen = strlen($string);
+    for ($i = 0; (($i < $strlen) && ($length > 0)); $i++)
+    {
+        if ($number = strpos(str_pad(decbin(ord(substr($string, $i, 1))), 8, '0', STR_PAD_LEFT), '0'))
+        {
+            if ($length < 1.0)
+            {
+                break;
+            }
+            $result .= substr($string, $i, $number);
+            $length -= 1.0;
+            $i += $number - 1;
+        }
+        else
+        {
+            $result .= substr($string, $i, 1);
+            $length -= 0.5;
+        }
+    }
+    $result = htmlspecialchars($result, ENT_QUOTES, 'UTF-8');
+    if ($i < $strlen)
+    {
+        $result .= $etc;
+    }
+    return $result;
+}
+
+
+function isGuest(){
+    return Yii::$app->jike_user->isGuest;
 }

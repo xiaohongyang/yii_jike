@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_NOTICE);
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'test');
 
@@ -14,3 +15,8 @@ $_SERVER['SERVER_NAME'] = parse_url(\Codeception\Configuration::config()['config
 $_SERVER['SERVER_PORT'] =  parse_url(\Codeception\Configuration::config()['config']['test_entry_url'], PHP_URL_PORT) ?: '80';
 
 Yii::setAlias('@tests', dirname(__DIR__));
+
+$config = require(__DIR__ . '/../../config/console.php');
+
+
+$application = new yii\console\Application($config);

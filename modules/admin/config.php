@@ -18,7 +18,8 @@ $config = [
     'defaultRoute'  =>  'index',
 
     'aliases'   =>  [
-        '@webName'   =>  '网站管理后台'
+        '@webName'   =>  '网站管理后台',
+        '@webHost'   =>  'http://jike365.com',
     ]
 
 ];

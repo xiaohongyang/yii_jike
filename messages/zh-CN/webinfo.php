@@ -1,6 +1,6 @@
 <?php
     return [
-        'webname' => 'good web name',
+        'webname' => '集客365',
         'backForm' => '后台'
     ];
 ?>

@@ -11,11 +11,12 @@
     <title><?=$this->title?></title>
     <?php $this->head(); ?>
 </head>
-<body>
+<body class="admin-s-page body-<?=implode('-',get_site_array())?>">
 <?php $this->beginBody();?>
     <?= $content ?>
     <footer>&copy; 2014 by My Company</footer>
 <?php $this->endBody(); ?>
+<input type="hidden" id="csrf_xhy"   value="<?=Yii::$app->request->getCsrfToken()?>" />
 </body>
 </html>
 <?php $this->endPage(); ?>

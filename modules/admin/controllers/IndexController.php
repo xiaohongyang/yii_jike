@@ -41,4 +41,27 @@ class IndexController extends BaseController{
 
         return $this->render('head');
     }
+
+    public function actionIndex2(){
+        $this->layout = 'main_2.php';
+        return $this->render('index2');
+    }
+
+    public function actionLeft(){
+        return $this->render('left.php');
+    }
+
+    public function actionTop(){
+        return $this->render('top.php');
+    }
+
+    public function actionMain(){
+        $this->layout = 'main_2.php';
+
+        return $this->render('index.php');
+    }
+
+   public function actionCenter(){
+       return $this->render('center.php');
+   }
 }

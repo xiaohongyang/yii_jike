@@ -20,27 +20,31 @@ use yii\helpers\Html;
                 'id' => 'login-form',
                 'options' => ['class' => 'form-horizontal'],
                 'fieldConfig' => [
-                    'template' => "{label}\n<div class=\"col-lg-4\">{input}</div>\n<div class=\"col-lg-5\">{error}</div>",
+                    'template' => "{label}\n<div class=\"col-lg-9\">{input}</div>\n",
                     'labelOptions' => ['class' => 'col-lg-3 control-label'],
                     'inputOptions' => ['class' => 'form-control'],
                 ],
                 'enableAjaxValidation' => false
             ]); ?>
-            <div class="">
-                <h3 class="col-md-offset-1"><?=Yii::t('webinfo','webname')?><?=Yii::t('webinfo','backForm')?>:</h3>
+            <div class="wrap-div">
+                <h3 class="col-md-offset-1">集客后台登录系统</h3>
 
-                <div class="margin-top-small" style="margin-top: 40px;"> </div>
+                 <div>
+                     <?=$form->errorSummary($model); ?>
+                 </div>
+                <div class="margin-top-small" style="margin-top: 20px;"> </div>
 
-                <?= $form->field($model, 'username')->textInput(['placeholder'=>'请输入用户名']) ?>
 
-                <?= $form->field($model, 'password')->passwordInput(['placeholder'=>'请输入密码']) ?>
+                <?= $form->field($model, 'user_name')->textInput(['placeholder'=>'请输入用户名']) ?>
+
+                <?= $form->field($model, 'user_password')->passwordInput(['placeholder'=>'请输入密码'])->label('密 &nbsp;&nbsp;码') ?>
 
                 <?php
 
                     $template = <<<STD
                         <div class="form-group field-user-password required has-error">
                             <div class="col-lg-6">{input}</div>
-                            <label class="col-lg-3 control-label" for="user-password">{image}</label>
+                            <span class="col-lg-3 control-label" for="user-password">{image}</span>
                         </div>
 STD;
                     echo $form->field($model, 'captcha')->widget(Captcha::className(),[
@@ -52,7 +56,8 @@ STD;
 
                     'imageOptions' => [
                         'style' => 'width: 80px; height: 30px;'
-                    ]
+                    ],
+                    'options' => ['placeholder'=>'请输入验证码']
 
                 ])?>
 
@@ -60,7 +65,7 @@ STD;
 
                     <!--<input type="submit" value="登录" class="btn btn-success center-block">-->
 
-                    <div class="col-lg-offset-3 col-lg-11">
+                    <div class=" col-lg-11">
                         <?= Html::submitInput('登录', [
                             'class' => 'btn btn-success '
                         ]); ?>

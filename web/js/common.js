@@ -28,9 +28,7 @@ function U() {
     return _APP_+'?'+arr.join('&');
 }
 
-$(function(){
-    //$(".select2").select2();
-})
+
 
 
 yii.allowAction = function ($e) {
@@ -65,3 +63,5 @@ yii.confirm = function (message, ok, cancel) {
     // to cancel click handler
     return false;
 }
+
+

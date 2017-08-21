@@ -1,0 +1,106 @@
+@font-color-gray : #7f7f7f;
+.btn-wrapper(){
+  .btn-wrap{
+    display: inline-block;
+    margin: 5px;
+    width: 50px; height: 52px;
+    border: 1px solid @font-color-gray;
+    span.btn{
+      padding: 1px;
+      position: relative;
+      .del{top:5px; display: none; position: absolute;right:3px; color:red;  background: #ccc; height: 16px; line-height: 16px;}
+      img{width: 48px; height: 40px; margin-top: 4px;margin-left: -1px;}
+      .del{top:-2px;right:0;}
+    }
+  }
+}
+
+.side-main{
+
+  .inline{
+    display: inline;
+    input{ height: 25px; line-height: 25px; font-size: 12px; }
+  }
+  .input-wrap{
+    display: none;
+  }
+
+  span.btn {
+    background: none;
+    border: none;
+  }
+
+  color: #7f7f7f;
+  .div01{
+
+    ul{
+      height: 170px;
+      color: #7f7f7f;
+
+      li{
+        float: left;
+
+        &.headpic{
+          position: relative;
+
+          .btn-wrap{
+            .btn{padding: 0; margin: 0;}
+            img.ajax_upload_img{ width: 160px; height: 160px; }
+          }
+
+          button{
+            position: absolute;
+            right: 0;
+            margin-right: 8px;
+            bottom: 8px;
+          }
+        }
+
+        &.ml-dl{
+          line-height: 30px;
+          .username{ font-size: 20px; font-family: 微软雅黑;  color: #000;}
+
+          .love_points{
+
+            position: relative;
+            .number{
+              color: #ed1c24;
+              text-decoration: underline;
+            }
+            img{
+              position: absolute;
+              z-index: 1;
+              top: 30px;
+              left: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+  .qq_space_address, .sina_space_address{
+
+    &.qq_space_address{
+      margin-top: 10px;
+    }
+    clear: left;
+    a{
+      color: #3aa2ed;
+    }
+  }
+  .wechat_address{
+    input{width: 500px;}
+  }
+
+  .wechar_ewm_pic{
+
+    .btn-wrapper();
+    .btn-wrap{
+      width: 122px; height: 124px; margin-left: 0px;
+
+      span.btn img{width: 120px; height:110px;}
+    }
+  }
+
+}
+

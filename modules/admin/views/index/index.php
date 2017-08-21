@@ -5,21 +5,19 @@ use app\assets\admin\ToFrameAsset;
 //    ToFrameAsset::register($this);
 ?>
 
-
 <div class="header">
 
     <div class="dl-title">
-        <a href="http://sc.chinaz.com" title="文档库地址" target="_blank">
+        <a href="/" title="" target="_blank">
             <span class="lp-title-port"> </span><span class="dl-title-text"><?=Yii::getAlias('@webName')?></span>
         </a>
     </div>
 
     <div class="dl-log">欢迎您，
-        <span class="dl-log-user"><?= \Yii::$app->user->identity->username ?></span><a
+        <span class="dl-log-user"><?= \Yii::$app->user->identity->user_name ?></span><a
             href="<?= Yii::$app->urlManager->createUrl('/admin/public/logout') ?>" title="退出系统"
-            class="dl-log-quit">[退出]</a><a
-            href="<?= Yii::$app->urlManager->createUrl('/admin/public/logout') ?>" title="文档库"
-            class="dl-log-quit">文档库</a>
+            class="dl-log-quit">[退出]</a>
+
     </div>
 </div>
 <div class="content">
@@ -29,19 +27,19 @@ use app\assets\admin\ToFrameAsset;
         </div>
         <ul id="J_Nav" class="nav-list ks-clear">
             <li class="nav-item dl-selected">
-                <div class="nav-item-inner nav-setup">设置修改</div>
+                <div class="nav-item-inner nav-setup">业务管理</div>
             </li>
             <li class="nav-item">
-                <div class="nav-item-inner nav-order">用户管理</div>
+                <div class="nav-item-inner nav-order">网站管理</div>
             </li>
             <li class="nav-item">
-                <div class="nav-item-inner nav-inventory">系统管理</div>
+                <div class="nav-item-inner nav-inventory">客服管理</div>
             </li>
             <li class="nav-item">
-                <div class="nav-item-inner nav-supplier">类别管理</div>
+                <div class="nav-item-inner nav-supplier">财务管理</div>
             </li>
             <li class="nav-item">
-                <div class="nav-item-inner nav-marketing">文章管理</div>
+                <div class="nav-item-inner nav-marketing">管理员管理</div>
             </li>
         </ul>
     </div>
@@ -67,12 +65,12 @@ use app\assets\admin\ToFrameAsset;
         var config = [{
             id: 'menu',
             menu: [{
-                text: '用户信息修改',
+                text: '业务管理',
                 items: [
                     {
-                        id: 'aboutuser',
-                        text: '修改密码',
-                        href: '<?=\Yii::$app->urlManager->createUrl('/admin/user/changepassword')?>',
+                        id: 'ywgl',
+                        text: '客户信息管理',
+                        href: '<?=\Yii::$app->urlManager->createUrl('/admin/busyness/custom')?>',
                         closeable: false
                     }
                 ]
@@ -80,38 +78,40 @@ use app\assets\admin\ToFrameAsset;
         }, {
             id: 'user',
             menu: [{
-                text: '用户管理',
+                text: '网站管理',
                 items: [
-                    {id: 'list', text: '用户列表', href: '<?=\Yii::$app->urlManager->createUrl('/admin/user/list')?>'},
-                    {id: 'create', text: '创建用户', href: '<?=\Yii::$app->urlManager->createUrl('/admin/user/create')?>'},
+                    {id: 'list', text: '1.公益广告管理', href: '<?=\Yii::$app->urlManager->createUrl('/admin/lovevideo/list')?>'},
+                    {id: 'fushuxinxi', text: '2.附属信息管理', href: '<?=\Yii::$app->urlManager->createUrl('/admin/articletype/channel')?>'},
+                    /*{id: 'typeList', text: '3.文章类别管理', href: '<?=\Yii::$app->urlManager->createUrl('/admin/articleType/list')?>'},*/
                 ]
             }]
         }, {
             id: 'rbac',
             menu: [{
-                text: 'rbac权限管理',
+                text: '客服管理',
                 items: [
-                    {id: 'role_create', text: '创建角色', href: '<?=Yii::$app->urlManager->createUrl('/admin/rbac/role_create')?>'},
-                    {id: 'role_list', text: '角色/模块列表', href: '<?=Yii::$app->urlManager->createUrl('/admin/rbac/role_list')?>'},
-                    {id: 'permission_create', text: '创建许可', href: '<?=Yii::$app->urlManager->createUrl('/admin/rbac/permission_create')?>'},
-                    {id: 'permission_list', text: '许可列表', href: '<?=Yii::$app->urlManager->createUrl('/admin/rbac/permission_list')?>'},
+                    {id: 'verify', text: '0元夺宝奖品信息审核', href: '<?=Yii::$app->urlManager->createUrl('/admin/zeroprize/verify')?>'},
+                    {id: 'cashprize', text: '0元夺宝兑奖管理', href: '<?=Yii::$app->urlManager->createUrl('/admin/zeroprize/cashprize')?>'},
+                    {id: 'activity', text: '集客狂欢活动信息管理', href: '<?=Yii::$app->urlManager->createUrl('/admin/activity/release')?>'},
                 ]
             }]
         }, {
             id: 'category',
             menu: [{
-                text: '类别管理',
+                text: '财务管理',
                 items: [
-                    {id: 'create', text: '创建类别', href: '<?=Yii::$app->urlManager->createUrl('/admin/category/create')?>'},
-                    {id: 'categories', text: '类别列表', href: '<?=Yii::$app->urlManager->createUrl('/admin/category/index')?>'},
+                    {id: 'invoice', text: '营销账户充值及发票管理', href: '<?=Yii::$app->urlManager->createUrl('/admin/finance/invoice')?>'},
+                    {id: 'integrate', text: '积分兑现管理', href: '<?=Yii::$app->urlManager->createUrl('/admin/finance/integrate')?>'},
+                    {id: 'frozen', text: '保证金退款管理', href: '<?=Yii::$app->urlManager->createUrl('/admin/finance/frozen')?>'},
                 ]
             }]
         }, {
-            id: 'article',
+            id: 'glygl',
             menu: [{
-                text: '文章管理',
+                text: '管理员管理',
                 items: [
-                    {id: 'articles', text: '文章列表', href: '<?=Yii::$app->urlManager->createUrl('/admin/article/articles')?>'},
+                    {id: 'users', text: '管理员管理', href: '<?=Yii::$app->urlManager->createUrl('/admin/user/list')?>'},
+                    {id: 'users', text: '数据统计', href: '<?=Yii::$app->urlManager->createUrl('/admin/user/count')?>'},
                 ]
             }]
         }];

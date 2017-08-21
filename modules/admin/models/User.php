@@ -9,14 +9,16 @@
 namespace app\modules\admin\models;
 
 
+use app\modules\frontadmin\models\BaseActiveRecord;
 use yii\base\Event;
 use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
 use yii\captcha\CaptchaValidator;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
-class User extends ActiveRecord implements IdentityInterface{
+class User extends BaseActiveRecord implements IdentityInterface{
 
     const DELETE_EFFOR_INFO = 'delete_error_info';
 
@@ -27,6 +29,11 @@ class User extends ActiveRecord implements IdentityInterface{
     public $repeat_password;
 
     public $captcha;
+
+    public $item_name;
+
+    const C_ADMIN_ROLE_NAME = '管理员';
+
 
     public function init()
     {
@@ -41,8 +48,8 @@ class User extends ActiveRecord implements IdentityInterface{
     public function rules()
     {
         return [
-            [['username'], 'required' , 'on' => 'login'],
-            [['password'], 'required' , 'on' => 'login'],
+            [['user_name'], 'required' , 'on' => 'login'],
+            [['user_password'], 'required' , 'on' => 'login'],
             [['captcha'], 'required', 'on' => 'login'],
             [['captcha'], 'captcha', 'on' => 'login'],
 
@@ -50,34 +57,35 @@ class User extends ActiveRecord implements IdentityInterface{
             ['old_password','findPassword','on'=>'changePwd'],
             ['repeat_password','compare','compareAttribute'=>'new_password','on'=>'changePwd'],
 
-            [['username', 'group'], 'required', 'on' => 'update'],
-            ['password', 'safe' , 'on' => 'update'],
+            [['user_name'], 'required', 'on' => 'update'],
+            ['user_password', 'safe' , 'on' => 'update'],
 
-            [['username', 'password'], 'required' , 'on' => 'create'],
-            ['username', 'findUsername', 'on' => 'create']
+            [['user_name', 'item_name' ], 'required' , 'on' => 'create'],
+            ['user_name', 'findUsername', 'on' => 'create'],
+            ['item_name', 'checkItemName', 'on' => 'create'],
         ];
     }
 
     public function scenarios()
     {
-        return [
+        return ArrayHelper::merge(parent::scenarios(),[
             //登录
-            'login' => ['username', 'password', 'captcha'],
+            'login' => ['user_name', 'user_password', 'captcha'],
             //修改密码
             'changePwd' => ['old_password', 'new_password', 'repeat_password'],
             //更新用户
-            'update' => ['username', 'password', 'group'],
+            'update' => ['user_name', 'user_password'],
             //创建用户
-            'create' => ['username', 'password'],
-        ];
+            'create' => ['user_name', 'user_password', 'item_name', 'user_mobile'],
+        ]);
     }
 
 
     public function attributeLabels()
     {
         return [
-            'username'  =>  \Yii::t('app','username'),
-            'password'  =>  '密码',
+            'user_name'  =>  '登录名',
+            'user_password'  =>  '密码',
             'captcha' => '验证码',
 
             'old_password' =>  \Yii::t('app','old_password'),
@@ -112,14 +120,14 @@ class User extends ActiveRecord implements IdentityInterface{
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->auth_key = \yii::$app->getSecurity()->generateRandomString();
-                $this->password = $this->_md5_password($this->password, $this->auth_key);
+                $this->user_password = $this->_md5_password($this->user_password, $this->auth_key);
             } else {
-                if ($this->password != $this->getOldAttribute('password')) {
+                if ($this->user_password != $this->getOldAttribute('user_password')) {
 
-                    if ( strlen($this->password) && strlen($this->auth_key)) {
-                        $this->password = $this->_md5_password($this->password, $this->auth_key);
-                    } else if ($this->password == "") {
-                        $this->password = $this->getOldAttribute('password');
+                    if ( strlen($this->user_password) && strlen($this->auth_key)) {
+                        $this->user_password = $this->_md5_password($this->user_password, $this->auth_key);
+                    } else if ($this->user_password == "") {
+                        $this->user_password = $this->getOldAttribute('user_password');
                     }
                 }
             }
@@ -131,6 +139,7 @@ class User extends ActiveRecord implements IdentityInterface{
     }
 
 
+    /****** IdentityInterface function begin **********/
     /**
      * Finds an identity by the given ID.
      * @param string|integer $id the ID to be looked for
@@ -168,7 +177,7 @@ class User extends ActiveRecord implements IdentityInterface{
     public function getId()
     {
         // TODO: Implement getId() method.
-        return $this->id;
+        return $this->user_id;
     }
 
     /**
@@ -202,17 +211,19 @@ class User extends ActiveRecord implements IdentityInterface{
         // TODO: Implement validateAuthKey() method.
         return $this->getAuthKey() === $authKey;
     }
+    /****** IdentityInterface function end  **********/
+
 
 
     /**
      * 通过用户名搜索用户
      *
-     * @param $username
+     * @param $user_name
      * @return null|static
      */
-    public static function findByUsername($username)
+    public static function findByUsername($user_name)
     {
-        return static::findOne(['username'=>$username]);
+        return static::findOne(['user_name'=>$user_name]);
     }
 
     /**
@@ -224,7 +235,7 @@ class User extends ActiveRecord implements IdentityInterface{
     public function validatePassword($password)
     {
 
-        return $this->getAttribute('password') === $this->_md5_password($password, $this->getAttribute('auth_key'));
+        return $this->getAttribute('user_password') === $this->_md5_password($password, $this->getAttribute('auth_key'));
     }
 
 
@@ -249,20 +260,38 @@ class User extends ActiveRecord implements IdentityInterface{
     public function login($params)
     {
         $this->setScenario('login');
+        if(is_array($params) && !key_exists( self::formName(), $params))
+            $params = [self::formName()=>$params];
+
         if ($this->load($params) && $this->validate()) {
-            if (($user = $this->findByUsername($this->username)) !== null) {
-                if ($user->validatePassword($this->password)) {
 
+            $user = $this->findByUsername($this->user_name);
+            if ($user !== null) {
 
-                    $user->trigger(self::EVENT_AFTER_LOGIN);
-                    return true;
-                } else {
-                    $this->addError('password', '用户或密码错误!');
+                if($user->status == \app\modules\frontadmin\models\user\User::C_STATUS_DELETED){
+                    $this->message = "管理员不存在或者已经被删除";
+                }else{
+
+                    if ($user->validatePassword($this->user_password)) {
+                        $user->trigger(self::EVENT_AFTER_LOGIN);
+                        if(\Yii::$app->user->can(self::C_ADMIN_ROLE_NAME))
+                            return true;
+                        else{
+                            $this->addErrors(['message'=>'您不是管理员!']);
+                            $this->message = "您不是管理员不能登录后台!";
+                            \Yii::$app->user->logout();
+                            return false;
+                        }
+                    } else {
+                        $this->addError('user_password', '用户或密码错误!');
+                    }
                 }
+            } else {
+                $this->addError('user_name','用户名密码不正确!');
             }
         }
 
-        return false;
+        return $this;
     }
 
     /**
@@ -274,7 +303,7 @@ class User extends ActiveRecord implements IdentityInterface{
     {
         $user =  $event->sender;
 
-        $identity = $this->findIdentity($user->getAttribute('id'));
+        $identity = $this->findIdentity($user->getAttribute('user_id'));
         \Yii::$app->user->login($identity);
 
     }
@@ -301,7 +330,7 @@ class User extends ActiveRecord implements IdentityInterface{
     public function findPassword($attribute, $params)
     {
         $user = \Yii::$app->user->getIdentity();
-        if ($user['password'] != $this->_md5_password($this->old_password, $user['auth_key'])) {
+        if ($user['user_password'] != $this->_md5_password($this->old_password, $user['auth_key'])) {
             $this->addError($attribute, '旧密码错误!');
         }
     }
@@ -309,9 +338,22 @@ class User extends ActiveRecord implements IdentityInterface{
 
     public function findUsername($attribute, $params)
     {
-        $data = User::findOne(['username'=>$this->username]);
-        if ($data) {
+        $data = User::findOne(['user_name'=>$this->user_name]);
+        if ($data && $this->item_name != \app\modules\frontadmin\models\user\User::C_ROLE_CHECK_ADMIN) {
             $this->addError($attribute, '用户名已经存在!');
+        }
+    }
+
+    public function checkItemName($attribute, $params)
+    {
+
+        $itemName = $this->$attribute;
+
+        $auth = \Yii::$app->authManager;
+        $items = $auth->getChildren(\app\modules\frontadmin\models\user\User::C_ROLE_SUPPER_ADMIN);
+        $itemsArr = ArrayHelper::getColumn($items,'name');
+        if (!is_array($items) || !count($items) || !in_array($itemName, $itemsArr)) {
+            $this->addError($attribute, '请选择正确的管理员类型!');
         }
     }
 
@@ -325,14 +367,14 @@ class User extends ActiveRecord implements IdentityInterface{
     public function savePassword($params)
     {
 
-        $model = $this->findOne(['id'=>\Yii::$app->user->id]);
+        $model = $this->findOne(['user_id'=>\Yii::$app->user->user_id]);
 
         if ($params && $params[$this->formName()] && count($params[$this->formName()])) {
 
             $model->scenario = 'changePwd';
             if ($model->load($params) && $model->validate()) {
 
-                $model->password = $model->new_password;
+                $model->user_password = $model->new_password;
                 $model->save();
             }
         }
@@ -385,24 +427,88 @@ class User extends ActiveRecord implements IdentityInterface{
      * @param $data
      * @return bool
      */
-    public function addOne($data)
+    public function create($data)
     {
-
+        //1.判断是否是超级管理员,不是则提交"对不起，您没有本栏目的操作权限"
+        //2.新添加的管理员默认密码为000000,如果添加的是审核管理员,需要判断前台账户是否存在，且密码为原来的密码
         $this->scenario = 'create';
-        if ($this->load($data) && $this->validate()) {
-            return $this->save();
-        } else {
+        if(is_array($data) && !key_exists(self::formName(), $data))
+            $data = [self::formName()=> $data];
+        if(!$this->_beforeCreate($data)){
             return false;
+        }else {
+            if ($this->load($data) && $this->validate()) {
+
+                if(is_null($this->user_mobile) || strlen($this->user_mobile)==0){
+                    $this->addError("user_mobile","手机号不能为空!");
+                    return false;
+                }
+                return $this->_create();
+            } else {
+                return false;
+            }
         }
+    }
 
+    private function _create(){
 
+        $rs = false;
+        if($this->item_name == \app\modules\frontadmin\models\user\User::C_ROLE_CHECK_ADMIN){
+            //添加审核管理员
+            $exit = self::find()->where([
+                'and',
+                ['user_name'=>$this->user_name],
+                ['user_mobile'=>$this->user_mobile]
+            ])->exists();
+            if(!$exit){
+                $this->message = "用户不存在,不能添加为".\app\modules\frontadmin\models\user\User::C_ROLE_CHECK_ADMIN;
+            }else{
+                $user = self::find()->where([
+                    'and',
+                    ['user_name'=>$this->user_name],
+                    ['user_mobile'=>$this->user_mobile]
+                ])->one();
+                $auth = \Yii::$app->authManager;
+                $role = $auth->getRole(\app\modules\frontadmin\models\user\User::C_ROLE_CHECK_ADMIN);
+                if(is_null($role))
+                    $this->message = "角色不存在!";
+                else{
+                    Auth_assignment::deleteAll(['user_id'=>$user->user_id]);
+                    $rs = $auth->assign($role, $user->user_id) ? true : false;
+                }
+            }
+        }else{
+            $rs = $this->save();
+        }
+        return $rs;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes); // TODO: Change the autogenerated stub
+        if($insert){
+            $auth = \Yii::$app->authManager;
+            $role = $auth->getRole($this->item_name);
+            $auth->assign($role, $this->user_id);
+        }
+    }
+
+    private function _beforeCreate($data){
+
+        $result = false;
+        $action = \app\modules\frontadmin\models\user\User::C_ROLE_SUPPER_ADMIN;
+        if(! \Yii::$app->user->can($action)){
+            $this->message = "对不起，您不是超级管理员,没有本栏目的操作权限!";
+        } else {
+            $result = true;
+        }
+        return $result;
     }
 
     public function  captcha()
     {
 
         $captcha = $this->captcha;
-
         $captchValidator = new CaptchaValidator();
         $captchValidator->captchaAction = '/admin/public/captcha';
 
@@ -411,4 +517,51 @@ class User extends ActiveRecord implements IdentityInterface{
         }
     }
 
+    //删除管理员
+    public function remove($userId){
+
+        $rs = false;
+        $user = self::findOne(['user_id'=>$userId]);
+        if(!is_null($user)){
+            $user->status = \app\modules\frontadmin\models\user\User::C_STATUS_DELETED;
+            if($rs = $user->save()){
+                $rs = true;
+            } else{
+                $this->message = "删除失败!";
+            }
+        } else{
+            $this->message = "用户不存在!";
+        }
+        return $rs;
+    }
+
+
+    //改变用户角色
+    public function changeRole($userId, $roleName){
+
+        $auth = \Yii::$app->authManager;
+        $roles = $auth->getRolesByUser($userId);
+        $result = false;
+
+        $rolesArray = [];
+        if(!is_null($roles) && is_array($roles) && count($roles)){
+            $rolesArray = ArrayHelper::getColumn($roles,'name');
+        }
+        if(!\Yii::$app->user->can(\app\modules\frontadmin\models\user\User::C_ROLE_SUPPER_ADMIN) && count($rolesArray) && in_array(\app\modules\frontadmin\models\user\User::C_ROLE_SUPPER_ADMIN, $rolesArray)){
+            $this->message = "您没有改变超级管理员角色的权限!";
+        } else if(count($rolesArray) && in_array($roleName, $rolesArray)){
+            $this->message = "角色没有改变，变更失败!";
+        } else {
+
+            Auth_assignment::deleteAll(['user_id'=>$userId]);
+            $role = $auth->getRole($roleName);
+            if(is_null($role)){
+                $this->message = "角色不存在或已经被删除!";
+            } else {
+                $auth->assign($role, $userId);
+                $result = true;
+            }
+        }
+        return $result;
+    }
 }
