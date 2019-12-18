@@ -24,9 +24,9 @@ class AliyunVideoService extends BaseService
         }
 
         $id= 'LTAIwQnz8M1GjUXw';
-        $key= 'UuGXajm7SlKReIZDEFyuyrLFT5hHNP';
-        $host = 'http://jike001.oss-cn-hangzhou.aliyuncs.com';
-        $callbackUrl = "http://oss-demo.aliyuncs.com:23450";
+        $key= 'xxx';
+        $host = 'xxx';
+        $callbackUrl = "xxx";
 
         $callback_param = array('callbackUrl'=>$callbackUrl,
             'callbackBody'=>'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}',
